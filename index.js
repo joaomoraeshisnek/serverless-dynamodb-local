@@ -243,12 +243,13 @@ class ServerlessDynamodbLocal {
 
     startHandler() {
         if (this.shouldExecute()) {
-            const config = this.service.custom && this.service.custom.dynamodb || {};
+            const config = this.service.custom && this.service.custom.dynamodb && this.service.custom.dynamodb.config || {}
+            const _config = this.service.custom && this.service.custom.dynamodb || {};
             const options = _.merge({
                     sharedDb: this.options.sharedDb || true,
                     install_path: this.options.localPath
                 },
-                config && config.start,
+                _config && _config.start,
                 this.options
             );
 
@@ -261,7 +262,7 @@ class ServerlessDynamodbLocal {
             }
 
             if (!options.noStart) {
-              dynamodbLocal.start(options);
+              dynamodbLocal.start(options, config);
             }
             return BbPromise.resolve()
             .then(() => options.migrate && this.migrateHandler())
